@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% block content %}
+    <h1>Write Your Next Blog Post Now!</h1>
+    <form action="/newpost" method='post'>
+        <label>
+            Blog Post Title:
+            <input type="text" name='b_title'/>
+        </label>
+        <label>
+            Blog Post Body
+            <input type="text" name='b_body'/>
+        </label>
+        <input type="submit" value='Add Your Blog Post'/>
+    </form>
+{% endblock %}

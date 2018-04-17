@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <h1>These are the blogposts so far:
+
+    </h1>
+    {% if posts|length == 0 %}
+        <p>No Blog Posts Yet</p>
+    {% else %}
+
+
+    
+    {% for post in posts %}
+
+    {{post.blogtitle}}</br> 
+    {{post.blogpost}}</br>
+    <hr>
+
+        
+    {% endfor %}
+
+    {% endif %}
+{% endblock %}

@@ -44,7 +44,7 @@ def newpost():
         new_title = request.form['b_title']
         if new_title == "":
             flash("Title was left blank")
-            return redirect('/newpost')
+            #return redirect('/newpost')
 
         new_body = request.form['b_body']
         if new_body == "":

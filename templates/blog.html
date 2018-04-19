@@ -11,9 +11,9 @@
 
     
     {% for post in posts %}
-
-    {{post.blogtitle}}</br> 
-    {{post.blogpost}}</br>
+    <h1><a href='/singleblog?id={{post.id}}'>{{post.title}}</a></h1>        
+    <!--{{post.title}}</br> -->
+    {{post.body}}</br>
     <hr>
 
         

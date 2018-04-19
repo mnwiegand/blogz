@@ -8,25 +8,25 @@ app.config['SQLACHEMY_ECHO'] = True
 db = SQLAlchemy(app)
 app.secret_key = 'bloggy@123'
 
-class Blogpost(db.Model):
+class Blog(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    blogtitle = db.Column(db.String(120))
-    blogpost = db.Column(db.String(400))
+    title = db.Column(db.String(120))
+    body = db.Column(db.String(400))
     #blogpost_time = db.Column(db.Date)
     #owner_id = db.Column(db.Integer, db.ForeignKey('blogger.id'))
 
-#    def __init__(self, blogtitle, blogpost):
-#        self.blogtitle = blogtitle
-#        self.blogpost = blogpost
+#    def __init__(self, title, blogpost):
+#        self.title = title
+#        self.body = body
 
 #    def __repr__(self):
-#            return '<Blogpost %r' %self.blogtitle
+#            return '<Blogpost %r' %self.title
 
 #class Blogger(db.Model):
 #    id = db.Column(db.Integer, primary_key = True)
 #    email = db.Column(db.String(120), unique = True)
 #    password = db.Column(db.String(120))
-    #blogposts = db.relationship('BlogPost', backref= 'owner')
+    #body = db.relationship('Blog', backref= 'owner')
 
 #    def __init__(self, email, password):
 #        self.email = email
@@ -34,34 +34,44 @@ class Blogpost(db.Model):
 
 @app.route('/', methods = ['POST', 'GET'])
 def index():
-    return render_template('newpost.html')
+    return render_template('base.html')
 
-@app.route('/newpost', methods = ['POST'])
+@app.route('/newpost', methods = ['POST', 'GET'])
 def newpost():
-    new_title = request.form['b_title']
-    new_body = request.form['b_body']
-    new_post = Blogpost(blogtitle = new_title, blogpost = new_body )
-    db.session.add(new_post)
-    db.session.commit()
-    return render_template('confirm_new_post.html')
+    if request.method == 'GET':
+        return render_template('newpost.html')
+    else:
+        new_title = request.form['b_title']
+        if new_title == "":
+            flash("Title was left blank")
+            return redirect('/newpost')
 
-@app.route('/blog', methods = ['POST', 'GET'])
+        new_body = request.form['b_body']
+        if new_body == "":
+            flash("Body was left blank")
+            return redirect('/newpost')
+
+        else:
+            new_post = Blog(title = new_title, body = new_body )
+            db.session.add(new_post)
+            db.session.commit()
+            flash("Congrats, your blog post was successful!")
+            new_id = str(new_post.id)
+            return redirect('/singleblog?id=' + new_id)
+
+@app.route('/blog', methods = ['GET'])
 def blog():
-    posts = Blogpost.query.all()
+    posts = Blog.query.all()
     return render_template('blog.html', posts = posts)
     #, blogtitle= Blogpost.blogtitle, blogpost = Blogpost.blogpost)
 
-#privacy settings for certain blog posts?
-#@app.before_request
-#def require_login():
-#   allowed_routes = ['login', 'register']
-#   if request.endpoint not in allowed_routes and 'email' not in session:
-#       return redirect('/login')
+@app.route('/singleblog', methods = ['GET'])
+def singleblog():
+    singleblog_id = request.args.get('id')
+    blog_object = Blog.query.filter_by(id = singleblog_id).first()
 
-
-
-
-
+    #return render_template('welcome.html', methods = ('post'), username_html = name)
+    return render_template('singleblog.html', title = blog_object.title, body = blog_object.body)
 
 if __name__ == '__main__':
     app.run()

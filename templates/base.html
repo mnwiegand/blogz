@@ -5,8 +5,15 @@
     <title>Build-a-Blog</title>
     <h1>Build-a-Blog</h1>
     <!--<h1>{{pgtitle_html}}</h1>-->
-    <a href="/">Make New Blog Post</a>
+    <a href="/newpost">Make New Blog Post</a>
     <a href="/blog">View Blog Posts</a>
+    {% with messages = get_flashed_messages()%}
+        <ul>
+        {% for message in messages %}
+            <li>{{message}}</li>
+        {% endfor %}
+        </ul>
+    {% endwith %}
 
 </head>
 <body>

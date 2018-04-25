@@ -1,23 +1,46 @@
 <!DOCTYPE html>
 <html>
+
 <head>
-    <!--<link rel="stylesheet" type="text/css" href="styles.css"/>-->
-    <title>Build-a-Blog</title>
-    <h1>Build-a-Blog</h1>
-    <!--<h1>{{pgtitle_html}}</h1>-->
+    <!--style specs for "sign up" validation-->
+    <style>
+        .divs {
+            position: relative;
+            height: 50px;
+        }
+
+        .inputs {
+            position: absolute;
+            left: 120px;
+            top: 0px;
+        }
+
+        .error {
+            color: red;
+            position: absolute;
+            top: -15px;
+            left: 310px;
+        }
+    </style>
+    <!--<link type="text/css" rel="stylesheet" href="styles.css"/>-->
+    <title>Blogz</title>
+    <h1>Blogz: {{pgtitle}}</h1>
+    <a href="/signup">Sign Up</a>
+    <a href="/login">Log in</a>
     <a href="/newpost">Make New Blog Post</a>
     <a href="/blog">View Blog Posts</a>
     {% with messages = get_flashed_messages()%}
-        <ul>
+    <ul>
         {% for message in messages %}
-            <li>{{message}}</li>
+        <li>{{message}}</li>
         {% endfor %}
-        </ul>
+    </ul>
     {% endwith %}
 
 </head>
+
 <body>
-    {% block content %}
-    {% endblock %}
+    {% block content %} {% endblock %}
 </body>
+<a href="/logout">Logout</a>
 </html>

@@ -1,17 +1,16 @@
+<!--this will be used to display only blogs by an single given author
+will be used when dynamically generating a page using Get request
+user query parameter on the /blog route-->
+
 {% extends "base.html" %}
 
 {% block content %}
-    {% if posts|length == 0 %}
-        <p>No Blog Posts Yet</p>
-    {% else %}
 
     {% for post in posts %}
     <h1><a href='/singleblog?id={{post.id}}'>{{post.title}}</a></h1>        
     <!--{{post.title}}</br> -->
     {{post.body}}</br>
     <hr>
-    
     {% endfor %}
 
-    {% endif %}
 {% endblock %}

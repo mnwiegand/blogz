@@ -1,0 +1,31 @@
+{% extends "base.html" %} {% block content %}
+
+<body>
+    <form action="/signup" method="post">
+        <!-- label's 'for' matches input's 'id'-->
+        <div class="divs">
+            <label for="Username">Username</label>
+            <input class="inputs" id="Username" type="text" name="user_name_entry" value="{{user_val}}" />
+            <!-- may not be an empty string -->
+            <p class="error">{{ptag_error1_html}}</p>
+        </div>
+        <div class="divs">
+            <label for="Password">Password</label>
+            <input class="inputs" id="Password" type="password" name="pass_entry1" value="" />
+            <!-- password may not be an empty string-->
+            <p class="error">{{ptag_error2_html}}</p>
+        </div>
+        <div class="divs">
+            <label for="VerifyPass">Verify Password</label>
+            <input class="inputs" id="VerifyPass" type="password" name="pass_entry2" value="" />
+            <!-- verify password may not be an empty string-->
+            <!-- p3_error, pass_entry1 and pass_entry2 must match -->
+            <p class="error">{{ptag_error3_html}}</p>
+        </div>
+        <div class="divs">
+            <input type="submit" />
+        </div>
+    </form>
+</body>
+
+{% endblock %}

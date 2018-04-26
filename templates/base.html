@@ -25,10 +25,16 @@
     <!--<link type="text/css" rel="stylesheet" href="styles.css"/>-->
     <title>Blogz</title>
     <h1>Blogz: {{pgtitle}}</h1>
-    <a href="/signup">Sign Up</a>
-    <a href="/login">Log in</a>
-    <a href="/newpost">Make New Blog Post</a>
-    <a href="/blog">View Blog Posts</a>
+        {% if 'username' not in session %}
+        <a href="/signup">Create Account</a>
+        <a href="/login">Log in</a>
+        {% endif %}
+        <a href='/'>Home</a>
+        <a href="/newpost">Make New Blog Post</a>
+        <a href="/blog">View Blog Posts</a>
+        {% if 'username' in session %}
+        <a href="/logout">Log Out</a>
+        {% endif %}
     {% with messages = get_flashed_messages()%}
     <ul>
         {% for message in messages %}
@@ -40,7 +46,8 @@
 </head>
 
 <body>
-    {% block content %} {% endblock %}
+    {% block content %}
+    {% endblock %}
 </body>
-<a href="/logout">Logout</a>
+
 </html>

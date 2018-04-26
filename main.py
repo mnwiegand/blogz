@@ -2,45 +2,57 @@ from flask import Flask, request, redirect, render_template, session, flash
 from flask_sqlalchemy import SQLAlchemy
 from app import app, db
 from models import Blog, User
+#TODO: PW hashing!!!
 #from hashutils import make_pw_hash
 import cgi
 
+#function to ID user in session
+def logged_in_blogger():
+    blogger = User.query.filter_by(username=session['username']).first()
+    return blogger
+
+#function to produce blogs by a certain user in session
+def get_logged_in_blog_list(X):
+    return Blog.query.filter_by(owner_id=X).all
+
 @app.route('/', methods = ['POST', 'GET'])
 def index():
-    return render_template('index.html')
+    return render_template('index.html', pgtitle="Home Page")
 
 @app.route('/newpost', methods = ['POST', 'GET'])
 def newpost():
     if request.method == 'GET':
-        return render_template('newpost.html')
-    else:
+        return render_template('newpost.html', pgtitle="What's up?")
+    elif request.method == 'POST':
         new_title = request.form['b_title']
         new_body = request.form['b_body']
         if new_title == "" or new_body == "":
             if new_title == "":
                 flash("Title was left blank")
-                #return redirect('/newpost')
             if new_body == "":
                 flash("Body was left blank")
             return redirect('/newpost')
 
         else:
-            new_post = Blog(title = new_title, body = new_body, owner_id = session['user'])
+            new_post = Blog(title = new_title, body = new_body, owner_id = logged_in_blogger().id)
             db.session.add(new_post)
             db.session.commit()
             flash("Congrats, your blog post was successful!")
             new_id = str(new_post.id)
             return redirect('/singleblog?id=' + new_id)
 
-@app.route('/blog', methods = ['GET', 'POST'])
+@app.route('/blog', methods = ['GET'])
 def blog():
-    if request.method == 'GET':
-    #user query parameter
-        posts = Blog.query.filter_by(owner_id=session['user']).all()
-        return render_template('singleUser.html', posts = posts, pgtitle="Your Blog Posts")
-    if request.method == 'POST':
-        return render_template('blog.html')
-    
+    if ('username' in session):
+            all_posts = Blog.query.all()
+            #all_authors = Users.query.all(id=all_posts.owner_id)
+            #User.query.filter_by(id=post.owner_id).first
+            return render_template('blog.html', posts = all_posts, pgtitle= "All posts so far")
+            #view_my_posts = Blog.query.filter_by(owner_id=logged_in_blogger().id).all()
+            #return render_template('singleUser.html', posts = view_my_posts, pgtitle=logged_in_blogger().username + "'s Blog Posts")
+    else:
+        return render_template('singleUser.html', posts = "", pgtitle="Log in to see posts.")
+
 @app.route('/singleblog', methods = ['GET'])
 def singleblog():
     singleblog_id = request.args.get('id')
@@ -50,25 +62,28 @@ def singleblog():
 @app.route("/login", methods=['GET', 'POST'])
 def login():
     if request.method == 'GET':
-        return render_template('login.html')
+        return render_template('login.html', pgtitle="Log in!")
     elif request.method == 'POST':
         username = request.form['username']
         password = request.form['password']
         users = User.query.filter_by(username=username)
+        if users.count() == 0:
+            flash('Username "{0}" does not exist yet.' .format(username))
+            return redirect("/login")
         if users.count() == 1:
             user = users.first()
             if password == user.password:
-                session['user'] = user.username
+                session['username'] = user.username
                 flash('welcome back, '+ user.username)
                 return redirect("/")
         flash('bad username or password')
         return redirect("/login")
 
-@app.route('/logout', methods=['POST'])
+#Directions asked for a GET request using href... but
+@app.route("/logout", methods=['GET'])#'POST' not allowed...
 def logout():
-    #delete username from the session
-    del session['user']
-    return redirect('/blog')
+    del session['username']
+    return redirect("/blog")
 
 @app.route("/signup", methods=['GET', 'POST'])
 def signup():
@@ -84,6 +99,9 @@ def signup():
             ptag_error1_py = ptag_error1_py + "Username must be between 3 and 20 characters. "
         if " " in username:
             ptag_error1_py = ptag_error1_py + "Username may not have any spaces. "
+        users = User.query.filter_by(username=username)
+        if users.count() != 0: #or if any username = any banned name
+            ptag_error1_py = ptag_error1_py + "Username taken, please pick a different username."
 #this portion checks the password & password verification fields
         ptag_error2_py=""
         if passphrase == "":
@@ -92,7 +110,6 @@ def signup():
             ptag_error2_py = ptag_error2_py + "Password must be between 3 and 20 characters. "
         if " " in passphrase:
             ptag_error2_py = ptag_error2_py + "Password may not have any spaces. "
-
         ptag_error3_py=""
         if passconfirmation == "":
             ptag_error3_py = "This field may not be left blank. "
@@ -111,7 +128,7 @@ def signup():
         # return redirect("/?error=" + redir_error)
             return render_template('signup.html', methods= ('post'), ptag_error1_html = ptag_error1_py,
                 ptag_error2_html = ptag_error2_py, ptag_error3_html = ptag_error3_py,
-                user_val = username)
+                user_val = username, pgtitle="Sign Up!")
         if errors == "":
         # direct to welcome page displaying "Welcome, [username]!"
         # return render_template('welcome.html', username_html = username)
@@ -119,17 +136,20 @@ def signup():
             user = User(username = username, password = passphrase) 
             db.session.add(user)
             db.session.commit()
-            session['user'] = user.username
-            return redirect("/")
+            session['username'] = user.username
+            return redirect("/newpost")
     else:
         return render_template('signup.html', pgtitle="Sign Up!")
 
-endpoints_without_login = ['login', 'signup', 'index']
+endpoints_without_login = ['login', 'signup', 'index', 'blog']
 
 @app.before_request
 def require_login():
-    if not ('user' in session or request.endpoint in endpoints_without_login):
-        return redirect("/signup")
+    if not ('username' in session or request.endpoint in endpoints_without_login):
+        return redirect("/login")
+
+app.secret_key = 'Aas?jdhdguqwy$ag^ajhv!b/vbjhbvj'
+
 
 if __name__ == '__main__':
     app.run()

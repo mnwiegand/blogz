@@ -1,4 +1,4 @@
-from flask import Flask, request, redirect, render_template, session, flash
+from flask import request, redirect, render_template, session, flash
 from flask_sqlalchemy import SQLAlchemy
 from app import app, db
 from models import Blog, User
@@ -51,19 +51,19 @@ def newpost():
 @app.route('/blog', methods = ['GET', 'POST'])
 def blog():
     #if ('username' in session):
-    #    blogger = request.args.get('user')
-    #    if blogger:
-    #    names_object = User.query.filter_by(id=blogger).first()
-    #    name = names_object.username
-    #    posts_by_user = Blog.query.filter_by(owner_id=blogger).all()
-    #    return render_template('singleUser.html', posts = posts_by_user, pgtitle="All posts by {0}".format(name), authored_by="Written by: {0}".format(name))
+    blogger = request.args.get('user')
+    if blogger:
+        names_object = User.query.filter_by(id=blogger).first()
+        name = names_object.username
+        posts_by_user = Blog.query.filter_by(owner_id=blogger).all()
+        return render_template('blog.html', posts = posts_by_user, pgtitle="All posts by {0}".format(name), authored_by="Written by: {0}".format(name))
     #
     #    else:
     all_posts = Blog.query.all()
     names_object = User.query.all()
-    return render_template('singleUser.html', posts = all_posts, pgtitle="All posts")
+    return render_template('blog.html', posts = all_posts, pgtitle="All posts")
     #else:
-    #    return render_template('singleUser.html', posts = "", pgtitle="Log in to see posts.")
+    #    return render_template('blog.html', posts = "", pgtitle="Log in to see posts.")
 
 @app.route('/singleblog', methods = ['GET'])
 def singleblog():
@@ -91,7 +91,7 @@ def login():
         flash('bad username or password')
         return redirect("/login")
 
-#Directions asked for a GET request using href... but
+#Directions asked for a GET request using href... but that returns "method not allowed"
 @app.route("/logout", methods=['GET'])#'POST' not allowed...
 def logout():
     del session['username']

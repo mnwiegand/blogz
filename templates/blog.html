@@ -1,14 +1,18 @@
-
 {% extends "base.html" %}
+{% block content %} 
+{% if posts|length == 0 %}
+<p>No Blog Posts Yet</p>
+{% endif %}
 
-{% block content %}
-
-        {% for post in posts %}
-            <h1><a href='/singleblog?id={{post.id}}'>{{post.title}}</a></h1>
-            <p>user_id: {{post.owner_id}}</p>
-            <p><a href='/blog?user={{post.owner_id}}'>Written by: {{post.owner.username}}</a></p>
-            <p>{{post.body}}</p></br>
-            <hr>
-        {% endfor %}
-
+{% for post in posts %}
+<h1>
+    <a href='/singleblog?id={{post.id}}'>{{post.title}}</a>
+</h1>
+<!--{{post.title}}</br> -->
+{{post.body}}</br>
+<p>
+    <a href='/blog?user={{post.owner_id}}'>written by: {{post.owner.username}}</a>
+</P>
+<hr>
+{% endfor %}
 {% endblock %}

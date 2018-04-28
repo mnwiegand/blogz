@@ -12,12 +12,19 @@ def logged_in_blogger():
     return blogger
 
 #function to produce blogs by a certain user in session
-def get_logged_in_blog_list(X):
-    return Blog.query.filter_by(owner_id=X).all
+def get_blog_list(X):
+    blog_list = Blog.query.filter_by(owner_id=X).all
+    return blog_list
+
+def author(Y):
+    all_authors = User.query.all()
+    author = User.query.filter_by(y).all
+    return author
 
 @app.route('/', methods = ['POST', 'GET'])
 def index():
-    return render_template('index.html', pgtitle="Home Page")
+    all_authors = User.query.all()
+    return render_template('index.html', authors= all_authors, pgtitle="Home Page")
 
 @app.route('/newpost', methods = ['POST', 'GET'])
 def newpost():
@@ -41,23 +48,28 @@ def newpost():
             new_id = str(new_post.id)
             return redirect('/singleblog?id=' + new_id)
 
-@app.route('/blog', methods = ['GET'])
+@app.route('/blog', methods = ['GET', 'POST'])
 def blog():
-    if ('username' in session):
-            all_posts = Blog.query.all()
-            #all_authors = Users.query.all(id=all_posts.owner_id)
-            #User.query.filter_by(id=post.owner_id).first
-            return render_template('blog.html', posts = all_posts, pgtitle= "All posts so far")
-            #view_my_posts = Blog.query.filter_by(owner_id=logged_in_blogger().id).all()
-            #return render_template('singleUser.html', posts = view_my_posts, pgtitle=logged_in_blogger().username + "'s Blog Posts")
-    else:
-        return render_template('singleUser.html', posts = "", pgtitle="Log in to see posts.")
+    #if ('username' in session):
+    #    blogger = request.args.get('user')
+    #    if blogger:
+    #    names_object = User.query.filter_by(id=blogger).first()
+    #    name = names_object.username
+    #    posts_by_user = Blog.query.filter_by(owner_id=blogger).all()
+    #    return render_template('singleUser.html', posts = posts_by_user, pgtitle="All posts by {0}".format(name), authored_by="Written by: {0}".format(name))
+    #
+    #    else:
+    all_posts = Blog.query.all()
+    names_object = User.query.all()
+    return render_template('singleUser.html', posts = all_posts, pgtitle="All posts")
+    #else:
+    #    return render_template('singleUser.html', posts = "", pgtitle="Log in to see posts.")
 
 @app.route('/singleblog', methods = ['GET'])
 def singleblog():
     singleblog_id = request.args.get('id')
     blog_object = Blog.query.filter_by(id = singleblog_id).first()
-    return render_template('singleblog.html', pgtitle = "Individual Blog Post", title = blog_object.title, body = blog_object.body)
+    return render_template('singleblog.html', pgtitle = "Individual Blog Post", post = blog_object)
 
 @app.route("/login", methods=['GET', 'POST'])
 def login():
@@ -141,7 +153,7 @@ def signup():
     else:
         return render_template('signup.html', pgtitle="Sign Up!")
 
-endpoints_without_login = ['login', 'signup', 'index', 'blog']
+endpoints_without_login = ['login', 'signup', 'index', 'blog', 'singleblog']
 
 @app.before_request
 def require_login():

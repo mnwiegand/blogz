@@ -2,4 +2,8 @@
 
 {% block content %}
 
+{% for author in authors %}
+    <p><a href="/blog?user={{author.id}}">{{author.username}}</a></p>
+{% endfor %}
+
 {% endblock %}

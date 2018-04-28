@@ -28,4 +28,4 @@ class User(db.Model):
         #self.hash = make_pw_hash(password)
 
     def __repr__(self):
-        return '<User %r>' % self.name
+        return self.username

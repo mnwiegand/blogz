@@ -1,23 +1,18 @@
 {% extends "base.html" %}
+{% block content %} 
+{% if posts|length == 0 %}
+<p>No Blog Posts Yet</p>
+{% endif %}
 
-{% block content %}
-<!--
-    {% if 'username' not in session %}
-        {{ session['username'] }}
-        <h1><a href='/login'>Log in to see your posts</a></h1>
-    {% endif %}
--->
- <!--   {% if 'username' in session %}
-        {{session['username']}}-->
-        {% if posts|length == 0 %}
-            <p>No Blog Posts Yet</p>
-        {% endif %}
-
-        {% for post in posts %}
-            <h1><a href='/singleblog?id={{post.id}}'>{{post.title}}</a></h1>        
-            <!--{{post.title}}</br> -->
-            {{post.body}}</br>
-            <hr>
-        {% endfor %}
-<!--    {% endif %}-->
+{% for post in posts %}
+<h1>
+    <a href='/singleblog?id={{post.id}}'>{{post.title}}</a>
+</h1>
+<!--{{post.title}}</br> -->
+{{post.body}}</br>
+<p>
+    <a href='/blog?user={{post.owner_id}}'>written by: {{post.owner.username}}</a>
+</P>
+<hr>
+{% endfor %}
 {% endblock %}

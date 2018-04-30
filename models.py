@@ -20,7 +20,7 @@ class User(db.Model):
     id = db.Column(db.Integer, primary_key = True)
     username = db.Column(db.String(120), unique = True)
     password = db.Column(db.String(120))
-    body = db.relationship('Blog', backref= 'owner')
+    blahblahblogz = db.relationship('Blog', backref= 'owner')
 
     def __init__(self, username, password):
         self.username = username

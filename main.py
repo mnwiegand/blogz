@@ -16,11 +16,6 @@ def get_blog_list(X):
     blog_list = Blog.query.filter_by(owner_id=X).all
     return blog_list
 
-def author(Y):
-    all_authors = User.query.all()
-    author = User.query.filter_by(y).all
-    return author
-
 @app.route('/', methods = ['POST', 'GET'])
 def index():
     all_authors = User.query.all()

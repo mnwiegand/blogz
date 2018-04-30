@@ -68,8 +68,11 @@ def blog():
 @app.route('/singleblog', methods = ['GET'])
 def singleblog():
     singleblog_id = request.args.get('id')
-    blog_object = Blog.query.filter_by(id = singleblog_id).first()
-    return render_template('singleblog.html', pgtitle = "Individual Blog Post", post = blog_object)
+    #when I was still using a separate template, 'singleblog.html'
+    #blog_object = Blog.query.filter_by(id = singleblog_id).first()
+    blog_object = Blog.query.filter_by(id = singleblog_id).all()
+    return render_template('blog.html', pgtitle="Individual Blog Post", posts = blog_object)
+    #return render_template('singleblog.html', pgtitle = "Individual Blog Post", post = blog_object)
 
 @app.route("/login", methods=['GET', 'POST'])
 def login():
